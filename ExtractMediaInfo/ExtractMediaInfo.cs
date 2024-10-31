@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Data;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace ExtractMediaInfo
@@ -41,7 +33,9 @@ namespace ExtractMediaInfo
         private void btnConsolidate_Click(object sender, EventArgs e)
         {
             bool readingComics = false;
+            bool readingMusic = false;
             List<string> comics = new List<string>();
+            List<string> music = new List<string>();
 
             using (StreamWriter outFile = new StreamWriter("ConsolidatedMovies.txt", false))
             {
@@ -69,6 +63,19 @@ namespace ExtractMediaInfo
                             if (!comics.Contains(line))
                                 comics.Add(line);
                         }
+                        else if (line.StartsWith("---Music---"))
+                        {
+                            readingMusic = true;
+                        }
+                        else if (line.StartsWith("---End Music---"))
+                        {
+                            readingMusic = false;
+                        }
+                        else if (readingMusic)
+                        {
+                            if (!music.Contains(line))
+                                music.Add(line);
+                        }
                         else if (file.ToLower().Contains("consolidatedmovies.txt"))
                         {
                             movies.Add(line);
@@ -93,14 +100,23 @@ namespace ExtractMediaInfo
             }
             MessageBox.Show($"Consolidated list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ConsolidatedMovies.txt")}");
 
-            if (!comics.Any())
-                return;
-
-            using (StreamWriter outFile = new StreamWriter("Comics.txt", false))
+            if (comics.Any())
             {
-                comics.ForEach(comic =>  outFile.WriteLine(comic));
+                using (StreamWriter outFile = new StreamWriter("Comics.txt", false))
+                {
+                    comics.ForEach(comic => outFile.WriteLine(comic));
+                }
+                MessageBox.Show($"Comics list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comics.txt")}");
             }
-            MessageBox.Show($"Comics list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comics.txt")}");
+
+            if (music.Any())
+            {
+                using (StreamWriter outFile = new StreamWriter("Music.txt", false))
+                {
+                    music.ForEach(music => outFile.WriteLine(music));
+                }
+                MessageBox.Show($"Music list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music.txt")}");
+            }
         }
         #endregion
 
@@ -203,6 +219,13 @@ namespace ExtractMediaInfo
                         DirectoryInfo comics = new DirectoryInfo(Path.Combine(drive.Name, "Comics"));
                         WriteComicsFolderContents(comics, outFile);
                     }
+
+                    //Check for Music folder
+                    if (Directory.Exists(Path.Combine(drive.Name, "Music")))
+                    {
+                        DirectoryInfo music = new DirectoryInfo(Path.Combine(drive.Name, "Music"));
+                        WriteMusicFolderContents(music, outFile, label);
+                    }
                 }
                 outFile.Close();
             }
@@ -226,6 +249,18 @@ namespace ExtractMediaInfo
             outFile.WriteLine("---Comics---");
             comicFolders.ToList().ForEach(folder => outFile.WriteLine(folder));
             outFile.WriteLine("---End Comics---");
+        }
+
+        private void WriteMusicFolderContents(DirectoryInfo music, StreamWriter outFile, string label)
+        {
+            var musicFolders = GetMovieFolders(music.FullName);
+            if (!musicFolders.Any())
+                return;
+
+            outFile.WriteLine();
+            outFile.WriteLine("---Music---");
+            musicFolders.ToList().ForEach(folder => outFile.WriteLine(GetMovieName(folder, label, false)));
+            outFile.WriteLine("---End Music---");
         }
         #endregion
 
@@ -341,7 +376,6 @@ namespace ExtractMediaInfo
                 return null;
             }
         }
-
         static long GetDirectorySize(string p)
         {
             // 1.
@@ -380,7 +414,7 @@ namespace ExtractMediaInfo
             return rgx.IsMatch(input);
         }
         #region GetMovieName
-        private string GetMovieName(string file, string driveLabel)
+        private string GetMovieName(string file, string driveLabel, bool fixFileName = true)
         {
             string movieName = "";
             string fileName;
@@ -396,7 +430,7 @@ namespace ExtractMediaInfo
                 
                 fileName = Path.GetFileNameWithoutExtension(file);
 
-                if (file.Contains('[') && file.Contains(']'))
+                if (!fixFileName || (file.Contains('[') && file.Contains(']')))
                 {
                     movieName = fileName;
                 }
