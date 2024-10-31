@@ -53,41 +53,51 @@ namespace ExtractMediaInfo
                         if (line.StartsWith("---Comics---"))
                         {
                             readingComics = true;
+                            continue;
                         }
                         else if (line.StartsWith("---End Comics---"))
                         {
                             readingComics = false;
-                        }
-                        else if (readingComics)
-                        {
-                            if (!comics.Contains(line))
-                                comics.Add(line);
+                            continue;
                         }
                         else if (line.StartsWith("---Music---"))
                         {
                             readingMusic = true;
+                            continue;
                         }
                         else if (line.StartsWith("---End Music---"))
                         {
                             readingMusic = false;
+                            continue;
+                        }
+                        else if (line.StartsWith("Free space:") || line.StartsWith("(Contains backup folder created on: "))
+                        {
+                            continue;
+                        }
+
+
+                        if (line.Contains(":\\"))
+                            currentDrive = line.Substring(0, line.IndexOf(":"));
+                        else if (line != "" && line.ToLower().EndsWith("(case)") && !movies.Contains(line, StringComparer.OrdinalIgnoreCase))
+                            movies.Add(line);
+                        
+                        if (readingComics)
+                        {
+                            if (!comics.Contains(line + spacer + currentDrive))
+                                comics.Add(line + spacer + currentDrive);
                         }
                         else if (readingMusic)
                         {
-                            if (!music.Contains(line))
-                                music.Add(line);
+                            if (!music.Contains(line + spacer + currentDrive))
+                                music.Add(line + spacer + currentDrive);
                         }
                         else if (file.ToLower().Contains("consolidatedmovies.txt"))
                         {
                             movies.Add(line);
                         }
-                        else if (!line.StartsWith("Free space:") && !line.StartsWith("(Contains backup folder created on: "))
-                        {
-                            if (line.Contains(":\\"))
-                                currentDrive = line;
-                            else if (line != "" && line.ToLower().EndsWith("(case)") && !movies.Contains(line, StringComparer.OrdinalIgnoreCase))
-                                movies.Add(line);
-                            else if (line != "" && !movies.Contains(line + spacer + currentDrive, StringComparer.OrdinalIgnoreCase))
-                                movies.Add(line + spacer + currentDrive);
+                        else if (line != "" && !movies.Contains(line + spacer + currentDrive, StringComparer.OrdinalIgnoreCase))
+                        { 
+                            movies.Add(line + spacer + currentDrive);
                         }
                     }
                 }
@@ -360,7 +370,7 @@ namespace ExtractMediaInfo
                         if (!folder.EndsWith(@"\Comics"))
                         {
                             string parentFolder = Path.GetDirectoryName(folder);
-                            folders.Add($"{Path.GetFileName(folder)} ({parentFolder.Substring(parentFolder.IndexOf(@"Comics\") + 7)})");
+                            folders.Add($"{Path.GetFileName(folder)} ({parentFolder.Substring(parentFolder.IndexOf(@"Comics\") + 7)})" + " (" + sz + " GB)");
                         }
                     }
                 }
