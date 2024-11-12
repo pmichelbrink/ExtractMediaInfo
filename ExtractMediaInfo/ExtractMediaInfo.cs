@@ -34,6 +34,7 @@ namespace ExtractMediaInfo
         {
             bool readingComics = false;
             bool readingMusic = false;
+            List<string> audiobooks = new List<string>();
             List<string> comics = new List<string>();
             List<string> music = new List<string>();
 
@@ -75,7 +76,6 @@ namespace ExtractMediaInfo
                             continue;
                         }
 
-
                         if (line.Contains(":\\"))
                             currentDrive = line.Substring(0, line.IndexOf(":"));
                         else if (line != "" && line.ToLower().EndsWith("(case)") && !movies.Contains(line, StringComparer.OrdinalIgnoreCase))
@@ -90,6 +90,16 @@ namespace ExtractMediaInfo
                         {
                             if (!music.Contains(line + spacer + currentDrive))
                                 music.Add(line + spacer + currentDrive);
+                        }
+                        else if (line.StartsWith("[AUDIOBOOK]"))
+                        {
+                            int startIndex = line.IndexOf("[AUDIOBOOK]") + 11;
+                            if (startIndex < 0)
+                            {
+                                MessageBox.Show("Audiobook issue with " + line);
+                                continue;
+                            }
+                            audiobooks.Add(line.Substring(startIndex) + spacer + currentDrive);
                         }
                         else if (file.ToLower().Contains("consolidatedmovies.txt"))
                         {
@@ -112,6 +122,8 @@ namespace ExtractMediaInfo
 
             if (comics.Any())
             {
+                comics.Sort();
+
                 using (StreamWriter outFile = new StreamWriter("Comics.txt", false))
                 {
                     comics.ForEach(comic => outFile.WriteLine(comic));
@@ -121,11 +133,24 @@ namespace ExtractMediaInfo
 
             if (music.Any())
             {
+                music.Sort();
+
                 using (StreamWriter outFile = new StreamWriter("Music.txt", false))
                 {
                     music.ForEach(music => outFile.WriteLine(music));
                 }
                 MessageBox.Show($"Music list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music.txt")}");
+            }
+
+            if (audiobooks.Any())
+            {
+                audiobooks.Sort();
+
+                using (StreamWriter outFile = new StreamWriter("Audiobooks.txt", false))
+                {
+                    audiobooks.ForEach(book => outFile.WriteLine(book));
+                }
+                MessageBox.Show($"Audiobook list written to: {Environment.NewLine} {Environment.NewLine} {Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Audiobooks.txt")}");
             }
         }
         #endregion
