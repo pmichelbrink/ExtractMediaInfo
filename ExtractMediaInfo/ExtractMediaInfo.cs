@@ -77,11 +77,14 @@ namespace ExtractMediaInfo
                         }
 
                         if (line.Contains(":\\"))
+                        {
                             currentDrive = line.Substring(0, line.IndexOf(":"));
+                        }
                         else if (line != "" && line.ToLower().EndsWith("(case)") && !movies.Contains(line, StringComparer.OrdinalIgnoreCase))
+                        {
                             movies.Add(line);
-                        
-                        if (readingComics)
+                        }
+                        else if (readingComics)
                         {
                             if (!comics.Contains(line + spacer + currentDrive))
                                 comics.Add(line + spacer + currentDrive);
@@ -101,12 +104,22 @@ namespace ExtractMediaInfo
                             }
                             audiobooks.Add(line.Substring(startIndex) + spacer + currentDrive);
                         }
+                        else if (line.StartsWith("[COMICS]"))
+                        {
+                            int startIndex = line.IndexOf("[COMICS]") + 8;
+                            if (startIndex < 0)
+                            {
+                                MessageBox.Show("Comics issue with " + line);
+                                continue;
+                            }
+                            comics.Add(line.Substring(startIndex) + spacer + currentDrive);
+                        }
                         else if (file.ToLower().Contains("consolidatedmovies.txt"))
                         {
                             movies.Add(line);
                         }
                         else if (line != "" && !movies.Contains(line + spacer + currentDrive, StringComparer.OrdinalIgnoreCase))
-                        { 
+                        {
                             movies.Add(line + spacer + currentDrive);
                         }
                     }
