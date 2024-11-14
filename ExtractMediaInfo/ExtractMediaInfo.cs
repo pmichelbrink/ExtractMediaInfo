@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using FlacLibSharp;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
@@ -188,7 +189,7 @@ namespace ExtractMediaInfo
                     string path = Path.Combine(drive.Name, "Fulldisc");
                     if (Directory.Exists(path))
                         GetMovies(drive, path);
-                    
+
                 }
             }
 
@@ -454,7 +455,7 @@ namespace ExtractMediaInfo
         private bool IsRomanNumeral(string romanValue)
         {
             Regex rgx = new Regex(@"^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$");
-            return  rgx.IsMatch(romanValue);
+            return rgx.IsMatch(romanValue);
         }
         private bool IsSeasonAndDiscDesignation(string input)
         {
@@ -471,11 +472,11 @@ namespace ExtractMediaInfo
             Movie movie = new Movie();
 
             try
-            {      
+            {
                 size = file.Substring(file.IndexOf("_("));
                 size = size.Substring(1);
                 file = file.Substring(0, file.IndexOf("_("));
-                
+
                 fileName = Path.GetFileNameWithoutExtension(file);
 
                 if (!fixFileName || (file.Contains('[') && file.Contains(']')))
@@ -518,7 +519,7 @@ namespace ExtractMediaInfo
                 movie.DriveLabel = driveLabel;
 
                 moviesList.Add(movie);
-                
+
                 return movieName + " " + size;
             }
             catch (System.Exception ex)
@@ -584,7 +585,7 @@ namespace ExtractMediaInfo
                     }
                 }
 
-                dups += Environment.NewLine + Environment.NewLine + $"Drive\t\t\t\tNumber of duplicates" + 
+                dups += Environment.NewLine + Environment.NewLine + $"Drive\t\t\t\tNumber of duplicates" +
                         Environment.NewLine + "-----------------------------------------------------" + Environment.NewLine;
 
                 int longestDriveLength = dupsOnDrive.Keys.OrderByDescending(s => s.Length).First().Length;// dupsOnDrive.Keys.Where(k=>k.)
@@ -614,6 +615,68 @@ namespace ExtractMediaInfo
                 count++;
             }
             return count;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(txtFlacFolder.Text))
+            {
+                MessageBox.Show("Select a valid Flac folder.");
+                return;
+            }
+            if (string.IsNullOrEmpty(txtArtist.Text))
+            {
+                MessageBox.Show("Select a valid Flac Artist value.");
+                return;
+            }
+
+            Parallel.ForEach(Directory.GetFiles(txtFlacFolder.Text, "*.flac", SearchOption.AllDirectories),
+                new ParallelOptions { MaxDegreeOfParallelism = 99999 }, flacFile =>
+            {
+                RemoveReadOnlyAttribute(flacFile);
+
+                using (FlacFile file = new FlacFile(flacFile))
+                {
+                    var comment = file.VorbisComment;
+                    if (comment == null)
+                    {
+                        comment = new VorbisComment();
+                        file.Metadata.Add(comment);
+                    }
+
+                    // Update the fields
+                    comment.Artist.Value = txtArtist.Text;
+                    //comment.Title.Value = "Hello World";
+
+                    file.Save();
+                }
+            });
+
+            MessageBox.Show("Finished setting Flac file details");
+        }
+        public bool RemoveReadOnlyAttribute(string filePath)
+        {
+            try
+            {
+                FileAttributes currentAttributes = File.GetAttributes(filePath);
+                if (!currentAttributes.HasFlag(FileAttributes.ReadOnly))
+                    return false;
+
+                FileAttributes newAttributes = currentAttributes & ~FileAttributes.ReadOnly;
+                File.SetAttributes(filePath, newAttributes);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        private void btnFlacFolderBrowse_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                txtFlacFolder.Text = folderBrowserDialog.SelectedPath;
+            }
         }
     }
 }

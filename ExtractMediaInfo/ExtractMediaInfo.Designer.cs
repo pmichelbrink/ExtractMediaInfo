@@ -49,10 +49,18 @@
             btnDupBrowse = new Button();
             txtDupSourceFile = new TextBox();
             label1 = new Label();
+            groupBox2 = new GroupBox();
+            txtArtist = new TextBox();
+            label3 = new Label();
+            btnWriteFlacDetails = new Button();
+            btnFlacFolderBrowse = new Button();
+            label2 = new Label();
+            txtFlacFolder = new TextBox();
             grpExtract.SuspendLayout();
             gbPath.SuspendLayout();
             grpConsolidate.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // btnExtract
@@ -257,12 +265,86 @@
             label1.TabIndex = 0;
             label1.Text = "Source File:";
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(txtArtist);
+            groupBox2.Controls.Add(label3);
+            groupBox2.Controls.Add(btnWriteFlacDetails);
+            groupBox2.Controls.Add(btnFlacFolderBrowse);
+            groupBox2.Controls.Add(label2);
+            groupBox2.Controls.Add(txtFlacFolder);
+            groupBox2.Location = new Point(13, 996);
+            groupBox2.Margin = new Padding(5, 6, 5, 6);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Padding = new Padding(5, 6, 5, 6);
+            groupBox2.Size = new Size(457, 196);
+            groupBox2.TabIndex = 7;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Write Flac Details";
+            // 
+            // txtArtist
+            // 
+            txtArtist.Location = new Point(95, 84);
+            txtArtist.Name = "txtArtist";
+            txtArtist.Size = new Size(274, 31);
+            txtArtist.TabIndex = 7;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(17, 87);
+            label3.Name = "label3";
+            label3.Size = new Size(58, 25);
+            label3.TabIndex = 6;
+            label3.Text = "Artist:";
+            // 
+            // btnWriteFlacDetails
+            // 
+            btnWriteFlacDetails.Location = new Point(280, 124);
+            btnWriteFlacDetails.Margin = new Padding(5, 6, 5, 6);
+            btnWriteFlacDetails.Name = "btnWriteFlacDetails";
+            btnWriteFlacDetails.Size = new Size(160, 44);
+            btnWriteFlacDetails.TabIndex = 5;
+            btnWriteFlacDetails.Text = "Write Flac Details";
+            btnWriteFlacDetails.UseVisualStyleBackColor = true;
+            btnWriteFlacDetails.Click += button1_Click;
+            // 
+            // btnFlacFolderBrowse
+            // 
+            btnFlacFolderBrowse.Location = new Point(382, 27);
+            btnFlacFolderBrowse.Margin = new Padding(5, 6, 5, 6);
+            btnFlacFolderBrowse.Name = "btnFlacFolderBrowse";
+            btnFlacFolderBrowse.Size = new Size(52, 44);
+            btnFlacFolderBrowse.TabIndex = 4;
+            btnFlacFolderBrowse.Text = "...";
+            btnFlacFolderBrowse.UseVisualStyleBackColor = true;
+            btnFlacFolderBrowse.Click += btnFlacFolderBrowse_Click;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(19, 34);
+            label2.Margin = new Padding(5, 0, 5, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(66, 25);
+            label2.TabIndex = 3;
+            label2.Text = "Folder:";
+            // 
+            // txtFlacFolder
+            // 
+            txtFlacFolder.Location = new Point(95, 31);
+            txtFlacFolder.Margin = new Padding(5, 6, 5, 6);
+            txtFlacFolder.Name = "txtFlacFolder";
+            txtFlacFolder.Size = new Size(274, 31);
+            txtFlacFolder.TabIndex = 2;
+            // 
             // ExtractMediaInfo
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.GhostWhite;
-            ClientSize = new Size(480, 1008);
+            ClientSize = new Size(480, 1207);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(grpConsolidate);
             Controls.Add(grpExtract);
@@ -277,6 +359,8 @@
             grpConsolidate.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -302,6 +386,13 @@
         private System.Windows.Forms.Button btnDupBrowse;
         private System.Windows.Forms.TextBox txtDupSourceFile;
         private System.Windows.Forms.Label label1;
+        private GroupBox groupBox2;
+        private Button btnWriteFlacDetails;
+        private Button btnFlacFolderBrowse;
+        private Label label2;
+        private TextBox txtFlacFolder;
+        private TextBox txtArtist;
+        private Label label3;
     }
 }
 

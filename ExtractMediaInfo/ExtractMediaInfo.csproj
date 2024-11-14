@@ -15,4 +15,8 @@
     <Content Include="moviecameratr2.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FlacLibSharp" Version="3.2.1" />
+  </ItemGroup>
+
 </Project>
