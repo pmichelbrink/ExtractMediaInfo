@@ -617,7 +617,7 @@ namespace ExtractMediaInfo
             return count;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnWriteFlacDetails_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(txtFlacFolder.Text))
             {

@@ -307,7 +307,7 @@
             btnWriteFlacDetails.TabIndex = 5;
             btnWriteFlacDetails.Text = "Write Flac Details";
             btnWriteFlacDetails.UseVisualStyleBackColor = true;
-            btnWriteFlacDetails.Click += button1_Click;
+            btnWriteFlacDetails.Click += btnWriteFlacDetails_Click;
             // 
             // btnFlacFolderBrowse
             // 
